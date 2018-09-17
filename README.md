@@ -1,13 +1,13 @@
-## Cassowary
+# Cassowary
 
 
 Cassowary is a swift implement of  constraint solving algorithm [Cassowary](https://constraints.cs.washington.edu/cassowary/) which  forms the core of the OS X and iOS Autolayout . This library is heavily inspired by this c++ implement  [rhea](https://github.com/Nocte-/rhea)
 
-##Requirements
+### Requirements
 - iOS 8.0+
 - Swift 4.2
 
-##Installation
+### Installation
 
 - [Carthage](https://github.com/Carthage/Carthage):  github "https://github.com/nangege/Cassowary"
 - Manually: just drag this project to your workspace
@@ -18,9 +18,8 @@ Then add Cassowary to Linked Frameworks and Libraries
 import Cassowary
 ```
 
-# Usage
+### Usage
 ```
-
 let v1 = Variable(),v2 = Variable, v3 = Variable()
 let solver = SimplexSolver()
 try? solver.add(v1 + v2 == 10)
@@ -29,13 +28,13 @@ solver.solve()
 print(solver.valueFor(v1)).  // 6
 print(solver.valueFor(v2)).  // 4
 ```
-# Todo
-- [x] complete unit test
-- [x] performance optimization
-- [x] more example
+### Todo
+- complete unit test
+- performance optimization
+- more example
 
 
-## Lisence
+### Lisence
 
 The MIT License (MIT)
 
