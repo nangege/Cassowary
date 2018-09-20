@@ -31,8 +31,6 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import Foundation
-
 @inline(__always) func approx(a: Double, b: Double) -> Bool{
   let epsilon = 1.0e-6
   return fabs(a-b) < epsilon

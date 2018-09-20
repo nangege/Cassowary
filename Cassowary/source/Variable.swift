@@ -31,8 +31,6 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import Foundation
-
 
 /// use class will be easy to track the value of Variable
 /// but using struct performent better than class type
