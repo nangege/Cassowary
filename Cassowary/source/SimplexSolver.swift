@@ -322,7 +322,6 @@ final public class SimplexSolver{
   
   private func addArtificalVariable(to expr: Expression) throws -> (Bool,[Constraint]) {
     let av = Variable.slack()
-    //let row = Expression(expr: expr)
     
     addRow(variable: av, expr: expr)
 
@@ -473,9 +472,9 @@ final public class SimplexSolver{
     }
   }
   
-  private func rowExpression(for v: Variable) -> Expression{
-    assert(rows.keys.contains(v))
-    return rows[v]!
+  private func rowExpression(for marker: Variable) -> Expression{
+    assert(rows.keys.contains(marker))
+    return rows[marker]!
   }
   
   
@@ -541,10 +540,10 @@ final public class SimplexSolver{
     rows[variable] = expr
   }
   
-  @discardableResult private func removeRow(for v: Variable) -> Expression{
-    assert(rows.keys.contains(v))
-    infeasibleRows.remove(v)
-    return rows.removeValue(forKey: v)!
+  @discardableResult private func removeRow(for marker: Variable) -> Expression{
+    assert(rows.keys.contains(marker))
+    infeasibleRows.remove(marker)
+    return rows.removeValue(forKey: marker)!
   }
   
   /// replace all old variable in rows and objective function with expr
@@ -555,7 +554,8 @@ final public class SimplexSolver{
   ///   - expr: expression to replace
   private  func substituteOut(old: Variable, expr: Expression){
     for (v ,rowExpr) in rows{
-      if rowExpr.terms.keys.contains(old){
+      // for performance reason, we don't use rowExpr.keys.contains
+      if rowExpr.coefficient(for: old) != 0{
         rowExpr.substituteOut(old, with: expr)
         if v.isRestricted && rowExpr.constant < 0{
           infeasibleRows.insert(v)
@@ -569,8 +569,8 @@ final public class SimplexSolver{
   /// basic var means variable only appear in rows.keys
   /// - Parameter vairable: variable to be checked
   /// - Returns: whether variable is a basic var
-  private func isBasicVar(_ vairable: Variable) -> Bool{
-    return rows.keys.contains(vairable)
+  private func isBasicVar(_ variable: Variable) -> Bool{
+    return rows[variable] != nil
   }
   
   public func printRow(){
