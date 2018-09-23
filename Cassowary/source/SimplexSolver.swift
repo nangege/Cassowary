@@ -42,6 +42,15 @@ public enum ConstraintError: Error{
 fileprivate typealias VarSet = Set<Variable>
 fileprivate typealias Row = [Variable: Expression]
 
+private struct ConstraintInfo {
+  let marker: Variable
+  let errors: [Variable]
+  init(marker: Variable,errors: [Variable]) {
+    self.marker = marker
+    self.errors = errors
+  }
+}
+
 final public class SimplexSolver{
   
   // whether call solve() when add or remove constraint
@@ -59,9 +68,8 @@ final public class SimplexSolver{
   
   private var constraintMarkered = [Variable: Constraint]()
   
-  // mapper for constraint and marker variable
-  private var markerVars = [Constraint: Variable]()
-  private var errorVars = [Constraint: VarSet]()
+  // mapper for constraint and marker ,errors variable
+  private var constraintInfos = [Constraint: ConstraintInfo]()
   
   //objective function,out goal is to minimize this function
   private var objective = Expression()
@@ -85,18 +93,18 @@ final public class SimplexSolver{
   
   public func remove(constraint: Constraint) throws {
     
-    guard let marker =  markerVars[constraint] else{
+    guard let info =  constraintInfos[constraint] else{
       throw ConstraintError.constraintNotFound
     }
     
     // remove errorVar from objective function
-    errorVars[constraint]?.forEach{
+    info.errors.forEach{
       add(expr: objective, variable: $0, delta: -constraint.weight)
       removeRow(for: $0)
     }
-    
-    markerVars.removeValue(forKey: constraint)
-    errorVars.removeValue(forKey: constraint)
+  
+    constraintInfos.removeValue(forKey: constraint)
+    let marker = info.marker
     constraintMarkered.removeValue(forKey: marker)
     
     if !isBasicVar(marker){
@@ -121,7 +129,7 @@ final public class SimplexSolver{
   ///   - constraint: constraint to update
   ///   - value: target constant
   public func updateConstant(for constraint: Constraint,to value: Double){
-    assert(markerVars.keys.contains(constraint))
+    assert(constraintInfos.keys.contains(constraint))
   
     let delta = -(value + constraint.expression.constant)
     if approx(a: delta, b: 0){
@@ -142,7 +150,7 @@ final public class SimplexSolver{
       return
     }
     
-    guard let errorVars = errorVars[constraint] else{
+    guard let errorVars = constraintInfos[constraint]?.errors else{
       return
     }
     
@@ -389,44 +397,46 @@ final public class SimplexSolver{
       add(expr: expr, variable: term.key, delta: term.value)
     }
     
+    var marker: Variable!
+    var errors = [Variable]()
+    
     if constraint.isInequality{
       // if is Inequality,add slack var
       // expr <(>)= 0 to expr - slack = 0
       let slack = Variable.slack()
       expr -= slack
-      markerVars[constraint] = slack
-      constraintMarkered[slack] = constraint
+      marker = slack
       
       if !constraint.isRequired{
         let minus = Variable.error()
         expr += minus
         objective += minus * constraint.weight
-        
-        addError(minus, for: constraint)
+
+        errors.append(minus)
       }
     }else{
       if constraint.isRequired{
         let dummp = Variable.dummpy()
         expr -= dummp
-
-        markerVars[constraint] = dummp
-        constraintMarkered[dummp] = constraint
+        marker = dummp
       }else{
         let eplus = Variable.error()
         let eminus = Variable.error()
         expr -= eplus
         expr += eminus
         
-        markerVars[constraint] = eplus
-        constraintMarkered[eplus] = constraint
-        
+        marker = eplus
+
         objective += eplus*constraint.weight
-        addError(eplus, for: constraint)
+        errors.append(eplus)
       
         objective += eminus * constraint.weight
-        addError(eminus, for: constraint)
+        errors.append(eminus)
       }
     }
+    
+    constraintInfos[constraint] =  ConstraintInfo(marker: marker, errors: errors)
+    constraintMarkered[marker] = constraint
     
     if expr.constant < 0{
       expr *= -1
@@ -436,7 +446,7 @@ final public class SimplexSolver{
   
   
   private func editConstant(for constraint: Constraint,delta value: Double){
-    let marker = markerVars[constraint]!
+    let marker = constraintInfos[constraint]!.marker
     var delta = value
     if marker.isSlack || constraint.isRequired{
       if constraint.relation == .greateThanOrEqual{
@@ -457,16 +467,6 @@ final public class SimplexSolver{
           infeasibleRows.insert(v)
         }
       }
-    }
-  }
-  
-  private func addError(_ v: Variable ,for constraint: Constraint){
-    if  errorVars[constraint] != nil{
-      errorVars[constraint]?.insert(v)
-    }else{
-      var errors = VarSet()
-      errors.insert(v)
-      errorVars[constraint] = errors
     }
   }
   
