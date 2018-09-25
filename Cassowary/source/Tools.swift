@@ -31,6 +31,15 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
+// ValueType box for performance optimization
+final class RefBox<Type>{
+  var value: Type
+  init(_ value: Type) {
+    self.value = value
+  }
+}
+
+
 @inline(__always) func approx(a: Double, b: Double) -> Bool{
   let epsilon = 1.0e-6
   return fabs(a-b) < epsilon

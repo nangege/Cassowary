@@ -99,17 +99,20 @@ extension Expression{
     constant += -value
   }
   
-  func substituteOut(_ variable: Variable, with expr: Expression) {
+  // en.. i dislike to let solver appears in Expression class
+  // but for performance reason, have to do that
+  func substituteOut(_ variable: Variable, with expr: Expression, solver: SimplexSolver? = nil, marker: Variable? = nil) {
     guard let  coefficient = terms.removeValue(forKey: variable) else{
       return
     }
-    add(expr: expr, multiply: coefficient)
+    add(expr: expr, multiply: coefficient, solver: solver, marker: marker)
   }
   
-  func add(expr: Expression,multiply: Double = 1){
+  func add(expr: Expression,multiply: Double = 1,solver: SimplexSolver? = nil, marker: Variable? = nil){
+    
     constant += expr.constant * multiply
     expr.terms.forEach {
-      add($0.key, multiply: $0.value * multiply)
+      add($0.key, multiply: $0.value * multiply,solver: solver,marker: marker)
     }
   }
 }
@@ -178,16 +181,22 @@ extension Expression{
     multiply(by: 1/div)
   }
   
-  func add(_ variable: Variable, multiply: Double = 1){
+  func add(_ variable: Variable, multiply: Double = 1, solver: SimplexSolver? = nil, marker: Variable? = nil){
     if let value = terms[variable]{
       if !nearZero(value + multiply){
         terms[variable] = value + multiply
       }else{
         terms.removeValue(forKey: variable)
+        if let marker = marker{
+          solver?.removeValue(marker, from: variable)
+        }
       }
     }else{
       if !nearZero(multiply){
         terms[variable] = multiply
+        if let marker = marker{
+          solver?.addToColomn(for: variable, value: marker)
+        }
       }
     }
   }

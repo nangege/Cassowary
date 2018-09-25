@@ -39,8 +39,9 @@ public enum ConstraintError: Error{
   case requiredFailureWithExplanation([Constraint])
 }
 
-fileprivate typealias VarSet = Set<Variable>
+typealias VarSet = RefBox<Set<Variable>>
 fileprivate typealias Row = [Variable: Expression]
+fileprivate  typealias Column = [Variable: VarSet]
 
 private struct ConstraintInfo {
   let marker: Variable
@@ -60,11 +61,12 @@ final public class SimplexSolver{
   public var explainFailure = true
 
   private var rows = Row()
+  private var columns = Column()
   
   // used to record infeasible rows when edit constarint
   // which means marker of this row is not external variable,but constant of expr < 0
   // we need to optimize this later
-  private var infeasibleRows = VarSet()
+  private var infeasibleRows = Set<Variable>()
   
   private var constraintMarkered = [Variable: Constraint]()
   
@@ -213,22 +215,22 @@ final public class SimplexSolver{
       var minRadio = Double.greatestFiniteMagnitude
       var r = 0.0
       
-      for (v , expr) in rows{
-        if !v.isPivotable{
-          continue
+      columns[entry]?.value.forEach{
+        if !$0.isPivotable{
+          return
         }
-
+        let expr = rows[$0]!
         let coeff = expr.coefficient(for: entry)
         
-        if coeff >= 0{
-          continue
+        if coeff > 0{
+          return
         }
         
         r = -expr.constant/coeff
         
         if r < minRadio{
           minRadio = r
-          exit = v
+          exit = $0
         }
       }
   
@@ -288,7 +290,7 @@ final public class SimplexSolver{
     let expr = removeRow(for: exit)
     expr.changeSubject(from: exit, to: entry)
     substituteOut(old: entry, expr: expr)
-    addRow(variable: entry, expr: expr)
+    addRow(header: entry, expr: expr)
   }
   
   
@@ -301,7 +303,7 @@ final public class SimplexSolver{
     }
     expr.solve(for: subject)
     substituteOut(old: subject, expr: expr)
-    addRow(variable: subject, expr: expr)
+    addRow(header: subject, expr: expr)
     return true
   }
   
@@ -329,12 +331,13 @@ final public class SimplexSolver{
   private func addArtificalVariable(to expr: Expression) throws -> (Bool,[Constraint]) {
     let av = Variable.slack()
     
-    addRow(variable: av, expr: expr)
+    addRow(header: av, expr: expr)
 
     try optimize(expr)
     
     if !nearZero(expr.constant){
-  
+      // there may be problem here
+      removeColumn(for: av)
       if explainFailure{
         return (false, buildExplanation(for: av, row: expr))
       }
@@ -461,10 +464,11 @@ final public class SimplexSolver{
         infeasibleRows.insert(marker)
       }
     }else{
-      for (v, expr) in rows{
+      columns[marker]?.value.forEach{
+        let expr = rows[$0]!
         expr.increaseConstant(by: expr.coefficient(for: marker)*delta)
-        if !v.isExternal && expr.constant < 0{
-          infeasibleRows.insert(v)
+        if !$0.isExternal && expr.constant < 0{
+          infeasibleRows.insert($0)
         }
       }
     }
@@ -488,10 +492,11 @@ final public class SimplexSolver{
     var exitVar2: Variable? = nil
     var exitVar3: Variable? = nil
     
-    for (variable, expr) in rows{
+    columns[v]?.value.forEach({ (variable) in
+      let expr = rows[variable]!
       let c = expr.coefficient(for: v)
       if c == 0{
-        continue
+        return
       }
       
       if variable.isExternal{
@@ -510,7 +515,7 @@ final public class SimplexSolver{
           exitVar2 = variable
         }
       }
-    }
+    })
     
     var exitVar = exitVar1
     if exitVar == nil{
@@ -534,14 +539,48 @@ final public class SimplexSolver{
     }
   }
   
-  private  func addRow(variable: Variable, expr: Expression){
-    rows[variable] = expr
+  private  func addRow(header: Variable, expr: Expression){
+    rows[header] = expr
+    for v in expr.terms.keys{
+      addValue(header, toColumn: v)
+    }
   }
   
   @discardableResult private func removeRow(for marker: Variable) -> Expression{
     assert(rows.keys.contains(marker))
     infeasibleRows.remove(marker)
-    return rows.removeValue(forKey: marker)!
+    let expr = rows.removeValue(forKey: marker)!
+    for (key , _) in expr.terms{
+      removeValue(marker, from: key)
+    }
+    return expr
+  }
+  
+  fileprivate func removeColumn(for key: Variable){
+    
+    columns[key]?.value.forEach {
+      rows[$0]?.earse(key)
+    }
+    objective.earse(key)
+    return
+  }
+  
+  func addValue(_ value: Variable, toColumn key: Variable){
+    if let column = columns[key]{
+      column.value.insert(value)
+    }else{
+      columns[key] = VarSet([value])
+    }
+  }
+  
+  func removeValue(_ value: Variable, from key: Variable){
+    guard let column = columns[key] else{
+      return
+    }
+    column.value.remove(value)
+    if column.value.isEmpty{
+      columns.removeValue(forKey: key)
+    }
   }
   
   /// replace all old variable in rows and objective function with expr
@@ -551,15 +590,14 @@ final public class SimplexSolver{
   ///   - old: variable to be replaced
   ///   - expr: expression to replace
   private  func substituteOut(old: Variable, expr: Expression){
-    for (v ,rowExpr) in rows{
-      // for performance reason, we don't use rowExpr.keys.contains
-      if rowExpr.coefficient(for: old) != 0{
-        rowExpr.substituteOut(old, with: expr)
-        if v.isRestricted && rowExpr.constant < 0{
-          infeasibleRows.insert(v)
-        }
+    columns[old]?.value.forEach{
+      let rowExpr = rows[$0]!
+      rowExpr.substituteOut(old, with: expr,solver: self,marker: $0)
+      if $0.isRestricted && rowExpr.constant < 0{
+        infeasibleRows.insert($0)
       }
     }
+    columns.removeValue(forKey: old)
     objective.substituteOut(old, with: expr)
   }
   

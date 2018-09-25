@@ -12,7 +12,7 @@
 		3835BBFA2132A18A006983E6 /* Cassowary.h in Headers */ = {isa = PBXBuildFile; fileRef = 3835BBEC2132A18A006983E6 /* Cassowary.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3835BC0B2132A1DE006983E6 /* SimplexSolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3835BC042132A1DE006983E6 /* SimplexSolver.swift */; };
 		3835BC0C2132A1DE006983E6 /* Expression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3835BC052132A1DE006983E6 /* Expression.swift */; };
-		3835BC0D2132A1DE006983E6 /* Approx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3835BC062132A1DE006983E6 /* Approx.swift */; };
+		3835BC0D2132A1DE006983E6 /* Tools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3835BC062132A1DE006983E6 /* Tools.swift */; };
 		3835BC102132A1DE006983E6 /* Variable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3835BC092132A1DE006983E6 /* Variable.swift */; };
 		3835BC112132A1DE006983E6 /* Constraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3835BC0A2132A1DE006983E6 /* Constraint.swift */; };
 		38C105AF21393B0400993530 /* SimplexSolverTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38C105AE21393B0400993530 /* SimplexSolverTestCase.swift */; };
@@ -40,7 +40,7 @@
 		3835BBF92132A18A006983E6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3835BC042132A1DE006983E6 /* SimplexSolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimplexSolver.swift; sourceTree = "<group>"; };
 		3835BC052132A1DE006983E6 /* Expression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Expression.swift; sourceTree = "<group>"; };
-		3835BC062132A1DE006983E6 /* Approx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Approx.swift; sourceTree = "<group>"; };
+		3835BC062132A1DE006983E6 /* Tools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tools.swift; sourceTree = "<group>"; };
 		3835BC092132A1DE006983E6 /* Variable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Variable.swift; sourceTree = "<group>"; };
 		3835BC0A2132A1DE006983E6 /* Constraint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constraint.swift; sourceTree = "<group>"; };
 		38C105AE21393B0400993530 /* SimplexSolverTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimplexSolverTestCase.swift; sourceTree = "<group>"; };
@@ -116,7 +116,7 @@
 				3835BC052132A1DE006983E6 /* Expression.swift */,
 				3835BC092132A1DE006983E6 /* Variable.swift */,
 				3835BC0A2132A1DE006983E6 /* Constraint.swift */,
-				3835BC062132A1DE006983E6 /* Approx.swift */,
+				3835BC062132A1DE006983E6 /* Tools.swift */,
 			);
 			path = source;
 			sourceTree = "<group>";
@@ -232,7 +232,7 @@
 				3835BC102132A1DE006983E6 /* Variable.swift in Sources */,
 				3835BC112132A1DE006983E6 /* Constraint.swift in Sources */,
 				3835BC0B2132A1DE006983E6 /* SimplexSolver.swift in Sources */,
-				3835BC0D2132A1DE006983E6 /* Approx.swift in Sources */,
+				3835BC0D2132A1DE006983E6 /* Tools.swift in Sources */,
 				3835BC0C2132A1DE006983E6 /* Expression.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
