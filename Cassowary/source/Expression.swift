@@ -195,7 +195,7 @@ extension Expression{
       if !nearZero(multiply){
         terms[variable] = multiply
         if let marker = marker{
-          solver?.addToColomn(for: variable, value: marker)
+          solver?.addValue(marker, toColumn: variable)
         }
       }
     }
