@@ -68,12 +68,15 @@ final public class SimplexSolver{
   // we need to optimize this later
   private var infeasibleRows = Set<Variable>()
   
+  // pivotable and coefficient < 0 variables in objective,we track this variables to avoid traverse when optimize
+  private var entryVars = Set<Variable>()
+  
   private var constraintMarkered = [Variable: Constraint]()
   
   // mapper for constraint and marker ,errors variable
   private var constraintInfos = [Constraint: ConstraintInfo]()
   
-  //objective function,out goal is to minimize this function
+  // objective function,out goal is to minimize this function
   private var objective = Expression()
   
   public init() {}
@@ -102,6 +105,7 @@ final public class SimplexSolver{
     // remove errorVar from objective function
     info.errors.forEach{
       add(expr: objective, variable: $0, delta: -constraint.weight)
+      entryVars.remove($0)
       removeRow(for: $0)
     }
   
@@ -162,6 +166,7 @@ final public class SimplexSolver{
     // strength only affact objective function
     errorVars.forEach {
       add(expr: objective, variable: $0, delta: delta)
+      updateEntryIfNeeded(for: $0)
     }
     
     if autoSolve{
@@ -201,13 +206,18 @@ final public class SimplexSolver{
       entry = nil
       exit = nil
 
-      for (v, c) in row.terms{
-        if v.isPivotable && c < 0{
-          entry = v
-          break
+      // use entryVars to find entry for objective to avoid traverse
+      if row === objective{
+        entry = entryVars.popFirst()
+      }else{
+        for (v, c) in row.terms{
+          if v.isPivotable && c < 0{
+            entry = v
+            break
+          }
         }
       }
-      
+
       guard let entry = entry else{
         return
       }
@@ -562,6 +572,7 @@ final public class SimplexSolver{
       rows[$0]?.earse(key)
     }
     objective.earse(key)
+    entryVars.remove(key)
     return
   }
   
@@ -599,6 +610,22 @@ final public class SimplexSolver{
     }
     columns.removeValue(forKey: old)
     objective.substituteOut(old, with: expr)
+    
+    expr.terms.forEach{
+      updateEntryIfNeeded(for: $0.key)
+    }
+    
+  }
+  
+  func updateEntryIfNeeded(for variable: Variable){
+    if variable.isPivotable{
+      let c = objective.coefficient(for: variable)
+      if c == 0{
+        entryVars.remove(variable)
+      }else if c < 0 {
+        entryVars.insert(variable)
+      }
+    }
   }
   
   /// check vhether variable is a basic Variable
