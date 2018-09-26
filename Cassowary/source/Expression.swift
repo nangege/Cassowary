@@ -99,8 +99,8 @@ extension Expression{
     constant += -value
   }
   
-  // en.. i dislike to let solver appears in Expression class
-  // but for performance reason, have to do that
+  // en.. hate to let solver appears in Expression class
+  // but for performance reason, i have to do that
   func substituteOut(_ variable: Variable, with expr: Expression, solver: SimplexSolver? = nil, marker: Variable? = nil) {
     guard let  coefficient = terms.removeValue(forKey: variable) else{
       return

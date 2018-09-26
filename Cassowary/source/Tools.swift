@@ -31,7 +31,8 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-// ValueType box for performance optimization
+/// value type box for performance optimization
+/// sometimes we may need to wrap  Struct into Class to avoid frequence copy operation
 final class RefBox<Type>{
   var value: Type
   init(_ value: Type) {
