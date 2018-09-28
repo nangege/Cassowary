@@ -41,7 +41,7 @@ public enum ConstraintError: Error{
 
 typealias VarSet = RefBox<Set<Variable>>
 fileprivate typealias Row = [Variable: Expression]
-fileprivate  typealias Column = [Variable: VarSet]
+fileprivate typealias Column = [Variable: VarSet]
 
 private struct ConstraintInfo {
   let marker: Variable

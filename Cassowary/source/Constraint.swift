@@ -45,7 +45,7 @@ public enum Relation: CustomDebugStringConvertible{
   }
 }
 
-public struct Strength: RawRepresentable,ExpressibleByFloatLiteral{
+public struct Strength: RawRepresentable,ExpressibleByFloatLiteral,Equatable{
   
   public typealias RawValue = Double
   
@@ -71,9 +71,9 @@ final public class Constraint{
 
   public weak var owner: AnyObject?
   
-  public var expr: Expression
+  public private(set) var expr: Expression
   
-  public var relation: Relation = .equal
+  public private(set) var relation: Relation = .equal
   
   public var strength: Strength
   

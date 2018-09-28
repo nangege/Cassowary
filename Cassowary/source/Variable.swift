@@ -85,7 +85,7 @@ public struct Variable{
     return varType != .external
   }
   
-  public init(value: Double = 0) {
+  public init() {
     self.init(type: .external)
   }
   

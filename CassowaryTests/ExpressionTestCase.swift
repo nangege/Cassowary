@@ -10,14 +10,6 @@ import XCTest
 @testable import Cassowary
 
 class ExpressionTestCase: XCTestCase {
-
-  override func setUp() {
-      // Put setup code here. This method is called before the invocation of each test method in the class.
-  }
-
-  override func tearDown() {
-      // Put teardown code here. This method is called after the invocation of each test method in the class.
-  }
   
   func testInit(){
   
@@ -36,7 +28,6 @@ class ExpressionTestCase: XCTestCase {
     XCTAssertEqual(expr3.coefficient(for: v2), -1)
     XCTAssertEqual(expr3.constant, 1)
     
-    
   }
 
   func testOperator() {
@@ -45,7 +36,7 @@ class ExpressionTestCase: XCTestCase {
     expr *= -1
     XCTAssertEqual(expr.constant, 5)
    
-    let v1 = Variable(value: 3),v2 = Variable(value: 2)
+    let v1 = Variable(),v2 = Variable()
     let expr2 = v1 * 2 + 1
     
     expr2 += v1
@@ -97,5 +88,6 @@ class ExpressionTestCase: XCTestCase {
     XCTAssertEqual(expr.coefficient(for: y), 0)
     
   }
+  
 
 }
