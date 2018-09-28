@@ -53,7 +53,7 @@ class PerformanceTests: XCTestCase {
     
     self.measure {
       
-      let solvers = (0..<10).map{ _ in SimplexSolver()}
+      let solvers = (0..<1).map{ _ in SimplexSolver()}
       solvers.forEach{ $0.autoSolve = true }
     
       var added = 0,eCount = 0
