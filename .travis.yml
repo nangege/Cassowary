@@ -13,7 +13,7 @@ script:
 - |
     if [ "$TEST_TYPE" = iOS ]; then
       set -o pipefail
-      xcodebuild clean test -project Cassowary.xcodeproj -scheme Cassowary -destination 'platform=iOS Simulator,name=iPhone 7,OS=10.1' -enableCodeCoverage YES | bundle exec xcpretty
+      xcodebuild clean test -project Cassowary.xcodeproj -scheme Cassowary -destination 'platform=iOS Simulator,name=iPhone 7,OS=12.0' -enableCodeCoverage YES | bundle exec xcpretty
     fi
 after_success:
     - sleep 5
