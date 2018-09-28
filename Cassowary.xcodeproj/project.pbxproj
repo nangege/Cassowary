@@ -89,7 +89,7 @@
 		3835BBEB2132A18A006983E6 /* Cassowary */ = {
 			isa = PBXGroup;
 			children = (
-				3835BC032132A1DE006983E6 /* source */,
+				3835BC032132A1DE006983E6 /* Sources */,
 				3835BBEC2132A18A006983E6 /* Cassowary.h */,
 				3835BBED2132A18A006983E6 /* Info.plist */,
 			);
@@ -109,7 +109,7 @@
 			path = CassowaryTests;
 			sourceTree = "<group>";
 		};
-		3835BC032132A1DE006983E6 /* source */ = {
+		3835BC032132A1DE006983E6 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
 				3835BC042132A1DE006983E6 /* SimplexSolver.swift */,
@@ -118,7 +118,7 @@
 				3835BC0A2132A1DE006983E6 /* Constraint.swift */,
 				3835BC062132A1DE006983E6 /* Tools.swift */,
 			);
-			path = source;
+			path = Sources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

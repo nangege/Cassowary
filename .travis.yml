@@ -1,0 +1,22 @@
+language: swift
+os: osx
+osx_image: xcode10
+
+env:
+  matrix:
+    - TEST_TYPE=iOS
+
+-before_install:
+ - |
+    gem install xcpretty -N --no-ri --no-rdoc
+script:
+- |
+    if [ "$TEST_TYPE" = iOS ]; then
+      set -o pipefail
+      xcodebuild clean test -project Cassowary.xcodeproj -scheme Cassowary -destination 'platform=iOS Simulator,name=iPhone 7,OS=10.1' -enableCodeCoverage YES | bundle exec xcpretty
+    fi
+after_success:
+    - sleep 5
+    - if [ "$TEST_TYPE" = iOS ] ; then
+        bash <(curl -s https://codecov.io/bash)
+      fi
