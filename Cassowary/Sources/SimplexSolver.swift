@@ -136,7 +136,9 @@ final public class SimplexSolver{
   ///   - value: target constant
   public func updateConstant(for constraint: Constraint,to value: Double){
     assert(constraintInfos.keys.contains(constraint))
-  
+    if  !constraintInfos.keys.contains(constraint){
+      return
+    }
     let delta = -(value + constraint.expression.constant)
     if approx(a: delta, b: 0){
       return
@@ -327,12 +329,20 @@ final public class SimplexSolver{
   private func chooseSubject(expr: Expression) -> Variable?{
     
     var subject: Variable? = nil
-    for (variable,coeff) in expr.terms{
+    var subjectExternal: Variable? = nil
+    for (variable, coeff) in expr.terms{
       if variable.isExternal{
-        return variable
+        if !variable.isRestricted{
+          return variable
+        }else if coeff < 0 || expr.constant == 0{
+          subjectExternal = variable
+        }
       }else if variable.isPivotable && coeff < 0{
         subject = variable
       }
+    }
+    if subjectExternal != nil{
+      return subjectExternal
     }
     return subject
   }
@@ -362,13 +372,10 @@ final public class SimplexSolver{
         removeRow(for: av)
         return (true, [Constraint]())
       }
-    
+      
+      // this is different with the original implement,but it does't make sense to return false
       guard let entry = expr.pivotableVar else{
-        var result = [Constraint]()
-        if explainFailure{
-          result = buildExplanation(for: av, row: expr)
-        }
-        return (false, result)
+        return (true, [Constraint]())
       }
       pivot(entry: entry, exit: av)
     }
@@ -459,7 +466,8 @@ final public class SimplexSolver{
   
   
   private func editConstant(for constraint: Constraint,delta value: Double){
-    let marker = constraintInfos[constraint]!.marker
+    let info = constraintInfos[constraint]!
+    let marker = info.marker
     var delta = value
     if marker.isSlack || constraint.isRequired{
       if constraint.relation == .greateThanOrEqual{
@@ -477,7 +485,7 @@ final public class SimplexSolver{
       columns[marker]?.value.forEach{
         let expr = rows[$0]!
         expr.increaseConstant(by: expr.coefficient(for: marker)*delta)
-        if !$0.isExternal && expr.constant < 0{
+        if $0.isRestricted && expr.constant < 0{
           infeasibleRows.insert($0)
         }
       }
@@ -505,9 +513,6 @@ final public class SimplexSolver{
     columns[v]?.value.forEach({ (variable) in
       let expr = rows[variable]!
       let c = expr.coefficient(for: v)
-      if c == 0{
-        return
-      }
       
       if variable.isExternal{
         exitVar3 = variable

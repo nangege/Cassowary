@@ -42,6 +42,9 @@ public struct Variable{
     /// public variable
     case external
     
+    /// public variable whose value will alwalys >= 0
+    case restrictedExternal
+    
     /// variable used to normalize required equality,like expr = 0 to expr + d1 - d2 = 0
     case dummpy
     
@@ -54,6 +57,7 @@ public struct Variable{
     var debugDescription: String{
       switch self {
       case .external: return "v"
+      case .restrictedExternal: return "r"
       case .dummpy: return "d"
       case .slack: return "s"
       case .error: return "e"
@@ -66,7 +70,7 @@ public struct Variable{
   }
   
   var isExternal: Bool {
-    return varType == .external
+    return varType == .external || varType == .restrictedExternal
   }
   
   var isSlack: Bool{
@@ -87,6 +91,10 @@ public struct Variable{
   
   public init() {
     self.init(type: .external)
+  }
+  
+  public static func restricted() -> Variable{
+    return Variable(type: .restrictedExternal)
   }
   
   private init(type: VarType){
