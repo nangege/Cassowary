@@ -48,6 +48,18 @@ class SimplexSolverTestCase: XCTestCase {
     XCTAssert(solver.valueFor(v1) == -20)
   }
   
+  func testConflicExplanation(){
+    
+    let v1 = Variable(), v2 = Variable()
+    let solver = SimplexSolver()
+    
+    try? solver.add(constraint: v1 >= 10)
+    try? solver.add(constraint: v1 == 100)
+    try? solver.add(constraint: v2 == 200)
+    XCTAssertThrowsError(try solver.add(constraint: v1 == v2))
+    
+  }
+  
   func testSetRestricted(){
     
     let v1 = Variable.restricted()
