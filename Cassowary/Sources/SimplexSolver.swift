@@ -97,8 +97,7 @@ final public class SimplexSolver{
   }
   
   public func remove(constraint: Constraint) throws {
-    
-    guard let info =  constraintInfos[constraint] else{
+    guard let info = constraintInfos[constraint] else{
       throw ConstraintError.constraintNotFound
     }
     
@@ -106,7 +105,9 @@ final public class SimplexSolver{
     info.errors.forEach{
       add(expr: objective, variable: $0, delta: -constraint.weight)
       entryVars.remove($0)
-      removeRow(for: $0)
+      if isBasicVar($0){
+        removeRow(for: $0)
+      }
     }
   
     constraintInfos.removeValue(forKey: constraint)
@@ -186,11 +187,8 @@ final public class SimplexSolver{
     infeasibleRows.removeAll()
   }
   
-  public func valueFor(_ variable: Variable) -> Double{
-    if let constant = rows[variable]?.constant{
-      return constant
-    }
-    return 0
+  public func valueFor(_ variable: Variable) -> Double?{
+    return rows[variable]?.constant
   }
   
   /// optimize objective function,minimize expr
