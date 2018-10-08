@@ -32,7 +32,7 @@ class SimplexSolverTestCase: XCTestCase {
     XCTAssert(solver.valueFor(var2) == 100.0)
   }
   
-  func testSetConstant(){
+  func testUpdateConstantEqualRequired(){
     
     let c = v1 == 100
     try? solver.add(constraint: c)
@@ -46,6 +46,88 @@ class SimplexSolverTestCase: XCTestCase {
     
     solver.updateConstant(for: c, to: -20)
     XCTAssert(solver.valueFor(v1) == -20)
+  }
+  
+  func testUpdateConstantEqualNoneRequired(){
+    
+    let c = v1 == 100
+    try? solver.add(constraint: c)
+    XCTAssert(solver.valueFor(v1) == 100)
+    
+    solver.updateConstant(for: c, to: 150)
+    XCTAssert(solver.valueFor(v1) == 150)
+    
+    solver.updateConstant(for: c, to: 0)
+    XCTAssert(solver.valueFor(v1) == 0)
+    
+    solver.updateConstant(for: c, to: -20)
+    XCTAssert(solver.valueFor(v1) == -20)
+  }
+  
+  func testUpdateConstantGreaterThanOrEqualRequired(){
+    
+    let c = v1 >= 100
+    try? solver.add(constraint: c)
+    XCTAssert(solver.valueFor(v1) == 100)
+    
+    solver.updateConstant(for: c, to: 150)
+    XCTAssertEqual(solver.valueFor(v1), 150)
+    
+    solver.updateConstant(for: c, to: 0)
+    XCTAssertEqual(solver.valueFor(v1) , 0)
+    
+    solver.updateConstant(for: c, to: -20)
+    XCTAssertEqual(solver.valueFor(v1) , -20)
+  }
+  
+  func testUpdateConstantGreaterThanOrEqualNoneRequired(){
+    
+    let c = v1 >= 100
+    c.strength = .strong
+    try? solver.add(constraint: c)
+    XCTAssert(solver.valueFor(v1) == 100)
+    
+    solver.updateConstant(for: c, to: 150)
+    XCTAssertEqual(solver.valueFor(v1), 150)
+    
+    solver.updateConstant(for: c, to: 0)
+    XCTAssertEqual(solver.valueFor(v1) , 0)
+    
+    solver.updateConstant(for: c, to: -20)
+    XCTAssertEqual(solver.valueFor(v1) , -20)
+  }
+  
+  func testSetConstantLessThanOrEqualRequired(){
+    
+    let c = v1 <= 100
+    try? solver.add(constraint: c)
+    XCTAssert(solver.valueFor(v1) == 100)
+    
+    solver.updateConstant(for: c, to: 150)
+    XCTAssertEqual(solver.valueFor(v1), 150)
+    
+    solver.updateConstant(for: c, to: 0)
+    XCTAssertEqual(solver.valueFor(v1) , 0)
+    
+    solver.updateConstant(for: c, to: -20)
+    XCTAssertEqual(solver.valueFor(v1) , -20)
+  }
+  
+  func testSetConstantLessThanOrEqualNoneRequired(){
+    
+    let c = v1 <= 100
+    c.strength = .strong
+    try? solver.add(constraint: c)
+    XCTAssert(solver.valueFor(v1) == 100)
+    
+    solver.updateConstant(for: c, to: 150)
+    XCTAssertEqual(solver.valueFor(v1), 150)
+    
+    solver.updateConstant(for: c, to: 0)
+    XCTAssertEqual(solver.valueFor(v1) , 0)
+    
+    solver.updateConstant(for: c, to: -20)
+    XCTAssertEqual(solver.valueFor(v1) , -20)
   }
   
   func testConflicExplanation(){

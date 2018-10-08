@@ -111,7 +111,7 @@ final public class Constraint{
   }
   
   func updateConstant(to constant:Double){
-    expr.constant = -constant
+    expression.constant = relation == .lessThanOrEqual ? constant : -constant
   }
   
   var expression: Expression{

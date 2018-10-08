@@ -140,7 +140,12 @@ final public class SimplexSolver{
     if  !constraintInfos.keys.contains(constraint){
       return
     }
-    let delta = -(value + constraint.expression.constant)
+    var delta = -(value + constraint.expression.constant)
+    
+    if constraint.relation == .lessThanOrEqual{
+      delta = (value - constraint.expression.constant)
+    }
+    
     if approx(a: delta, b: 0){
       return
     }
@@ -463,15 +468,9 @@ final public class SimplexSolver{
   }
   
   
-  private func editConstant(for constraint: Constraint,delta value: Double){
+  private func editConstant(for constraint: Constraint,delta: Double){
     let info = constraintInfos[constraint]!
     let marker = info.marker
-    var delta = value
-    if marker.isSlack || constraint.isRequired{
-      if constraint.relation == .greateThanOrEqual{
-        delta = -delta
-      }
-    }
 
     if isBasicVar(marker){
       let expr = rowExpression(for: marker)
