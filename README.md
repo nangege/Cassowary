@@ -14,7 +14,7 @@ Cassowary is a swift implement of  constraint solving algorithm [Cassowary](http
 
 ## Installation
 
-###CocoaPods
+### CocoaPods
 
 [CocoaPods](http://cocoapods.org/) is a dependency manager for Cocoa projects. Install it with the following command:
 
