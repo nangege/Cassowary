@@ -558,7 +558,8 @@ final public class SimplexSolver{
     }
   }
   
-  @discardableResult private func removeRow(for marker: Variable) -> Expression{
+  @discardableResult
+  private func removeRow(for marker: Variable) -> Expression{
     assert(rows.keys.contains(marker))
     infeasibleRows.remove(marker)
     let expr = rows.removeValue(forKey: marker)!

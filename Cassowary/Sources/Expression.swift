@@ -70,7 +70,8 @@ extension Expression{
     return nil
   }
   
-  @discardableResult func solve(for variable: Variable) -> Double{
+  @discardableResult
+  func solve(for variable: Variable) -> Double{
     assert(terms.keys.contains(variable))
     let value = terms.removeValue(forKey: variable)!
     let reciprocal = 1/value
