@@ -215,12 +215,7 @@ final public class SimplexSolver{
       if row === objective{
         entry = entryVars.popFirst()
       }else{
-        for (v, c) in row.terms{
-          if v.isPivotable && c < 0{
-            entry = v
-            break
-          }
-        }
+        entry = row.terms.first{ $0.key.isPivotable && $0.value < 0 }?.key
       }
 
       guard let entry = entry else{
@@ -553,9 +548,7 @@ final public class SimplexSolver{
   
   private  func addRow(header: Variable, expr: Expression){
     rows[header] = expr
-    for v in expr.terms.keys{
-      addValue(header, toColumn: v)
-    }
+    expr.terms.keys.forEach{ addValue(header, toColumn: $0) }
   }
   
   @discardableResult
@@ -563,9 +556,7 @@ final public class SimplexSolver{
     assert(rows.keys.contains(marker))
     infeasibleRows.remove(marker)
     let expr = rows.removeValue(forKey: marker)!
-    for (key , _) in expr.terms{
-      removeValue(marker, from: key)
-    }
+    expr.terms.forEach{ removeValue(marker, from: $0.key)}
     return expr
   }
   

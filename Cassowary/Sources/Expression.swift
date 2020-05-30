@@ -62,12 +62,7 @@ extension Expression{
   
   var pivotableVar: Variable?{
     assert(!isConstant)
-    for variable in terms.keys{
-      if variable.isPivotable{
-        return variable
-      }
-    }
-    return nil
+    return terms.keys.first{$0.isPivotable}
   }
   
   @discardableResult
@@ -113,7 +108,7 @@ extension Expression{
     
     constant += expr.constant * multiply
     expr.terms.forEach {
-      add($0.key, multiply: $0.value * multiply,solver: solver,marker: marker)
+      add($0.key, multiply: $0.value * multiply, solver: solver, marker: marker)
     }
   }
 }
@@ -153,9 +148,7 @@ extension Expression{
   
   public static func * (lhs: Expression, rhs: Double) -> Expression{
     let expr = Expression()
-    for (v, c) in lhs.terms{
-      expr.add(v, multiply: c*rhs)
-    }
+    lhs.terms.forEach{ expr.add($0.key, multiply: $0.value * rhs)}
     expr.constant = lhs.constant * rhs
     return expr
   }
@@ -172,9 +165,7 @@ extension Expression{
 extension Expression{
   private func multiply(by mul: ValueType){
     constant *= mul
-    for (key, value) in terms{
-      terms[key] = value*mul
-    }
+    terms = terms.mapValues{ $0 * mul}
   }
   
   private func divide(by div: ValueType){
@@ -212,12 +203,9 @@ extension Expression{
 
 extension Expression: CustomDebugStringConvertible{
   public var debugDescription: String{
-    var expr = ""
-    for (v, c) in terms{
-      expr += "\(v)*\(c) + "
-    }
-    expr += "\(constant)"
-    return expr
+    return terms.reduce("") { (temp, term) -> String in
+      temp + "\(term.key)*\(term.value) + "
+    } + "\(constant)"
   }
 }
 

@@ -127,14 +127,5 @@ extension Variable: CustomDebugStringConvertible{
   }
 }
 
-extension Variable: Hashable{
-  
-  public static func ==(lhs: Variable, rhs: Variable) -> Bool {
-    return lhs.hashValue == rhs.hashValue
-  }
-
-  public var hashValue: Int{
-    return count
-  }
-}
+extension Variable: Hashable{}
 

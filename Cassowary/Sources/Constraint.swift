@@ -142,15 +142,13 @@ extension Constraint: CustomDebugStringConvertible{
 
 extension Constraint: Hashable{
   public static func ==(lhs: Constraint, rhs: Constraint) -> Bool {
-    return lhs.hashValue == rhs.hashValue
+    return lhs === rhs
   }
   
-  public var hashValue: Int{
-    if let hashCache = hashCache{
-      return hashCache
-    }
-    hashCache = ObjectIdentifier(self).hashValue
-    return hashCache!
+  public func hash(into hasher: inout Hasher) {
+    let hash = hashCache ?? ObjectIdentifier(self).hashValue
+    hashCache = hash
+    hasher.combine(hash)
   }
 }
 
