@@ -2,6 +2,7 @@
 <a href="https://travis-ci.org/https://travis-ci.org/nangege/Cassowary"><img src="https://travis-ci.org/nangege/Cassowary.svg?branch=master"></a>
 [![Version](https://img.shields.io/cocoapods/v/SwiftCassowary.svg?style=flat)](http://cocoapods.org/pods/SwiftCassowary)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+[![swiftpm compatible](https://img.shields.io/badge/swiftpm-compatible-brightgreen.svg?style=flat)](https://swift.org/package-manager)
 [![](https://img.shields.io/badge/iOS-8.0%2B-lightgrey.svg)]()
 [![Swift 4.0](https://img.shields.io/badge/Swift-4.2-orange.svg)]()
 
@@ -80,6 +81,14 @@ $(SRCROOT)/Carthage/Build/iOS/Cassowary.framework
 ```
 
 For more information about how to use Carthage, please see its [project page](https://github.com/Carthage/Carthage).
+
+### Swift Package Manager
+To install Cassowary for use in a Swift Package Manager-powered tool, script or server-side application, add Cassowary as a dependency to your `Package.swift` file. For more information, please see the [Swift Package Manager documentation](https://github.com/apple/swift-package-manager/tree/master/Documentation).
+
+```swift
+.package(url: "https://github.com/nangege/Cassowary", from: "0.2.0")
+```
+
 
 
 ## Usage

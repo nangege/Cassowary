@@ -31,6 +31,8 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
+import func Foundation.fabs
+
 /// value type box for performance optimization
 /// sometimes we may need to wrap  Struct into Class to avoid frequence copy operation
 final class RefBox<Type>{
