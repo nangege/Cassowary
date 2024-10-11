@@ -229,7 +229,7 @@ final public class SimplexSolver{
         if !$0.isPivotable{
           return
         }
-        let expr = rows[$0]!
+        guard let expr = rows[$0] else { return }
         let coeff = expr.coefficient(for: entry)
         
         if coeff > 0{
@@ -464,7 +464,8 @@ final public class SimplexSolver{
   
   
   private func editConstant(for constraint: Constraint,delta: Double){
-    let info = constraintInfos[constraint]!
+    // better to throw error?
+    guard let info = constraintInfos[constraint] else { return }
     let marker = info.marker
 
     if isBasicVar(marker){
@@ -475,7 +476,8 @@ final public class SimplexSolver{
       }
     }else{
       columns[marker]?.value.forEach{
-        let expr = rows[$0]!
+        // better to throw error?
+        guard let expr = rows[$0] else { return }
         expr.increaseConstant(by: expr.coefficient(for: marker)*delta)
         if $0.isRestricted && expr.constant < 0{
           infeasibleRows.insert($0)
@@ -596,7 +598,8 @@ final public class SimplexSolver{
   ///   - expr: expression to replace
   private  func substituteOut(old: Variable, expr: Expression){
     columns[old]?.value.forEach{
-      let rowExpr = rows[$0]!
+      //better to throw error?
+      guard let rowExpr = rows[$0] else { return }
       rowExpr.substituteOut(old, with: expr,solver: self,marker: $0)
       if $0.isRestricted && rowExpr.constant < 0{
         infeasibleRows.insert($0)
